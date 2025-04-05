@@ -6,61 +6,82 @@ namespace ConsoleApp1.Task
     {
         public void Run()
         {
-            Console.WriteLine(Book.Content);
+           
+            MyMatrix matrix = new MyMatrix(3, 3);
+            Console.WriteLine("Оригінальна матриця:");
+            matrix.DisplayMatrix();
 
-            Console.Write("Введіть текст для пошуку: ");
-            string searchText = Console.ReadLine();
-            FindAndReplaceManager.FindNext(searchText);
+            MyMatrix transposedMatrix = matrix.GetTransposed();
+            Console.WriteLine("Транспонована матриця:");
+            transposedMatrix.DisplayMatrix();
 
-            Console.Write("Бажаєте додати нотатку? (так/ні): ");
-            string choice = Console.ReadLine().ToLower();
-
-            if (choice == "так")
-            {
-                Console.Write("Введіть вашу нотатку: ");
-                string note = Console.ReadLine();
-                Book.Notes.AddNote(note);
-            }
-
-            Console.WriteLine("\n Усі нотатки:");
-            Book.Notes.ShowNotes();
+            matrix.ResizeMatrix(4, 4);
+            Console.WriteLine("Матриця після зміни розміру на 4x4:");
+            matrix.DisplayMatrix();
         }
 
-        class Book
+        class MyMatrix
         {
-            public static string Content = "Це книга. Вона містить текст. Шукайте потрібне слово тут.";
+            private int[,] matrix;
 
-            public static class Notes
+            public MyMatrix(int rows, int cols)
             {
-                private static string _notes = "";
-
-                public static void AddNote(string note)
+                matrix = new int[rows, cols];
+                Random random = new Random();
+               
+                for (int i = 0; i < rows; i++)
                 {
-                    if (!string.IsNullOrEmpty(_notes))
-                        _notes += "\n";
-                    _notes += note;
-                    Console.WriteLine("Нотатку збережено.");
-                }
-
-                public static void ShowNotes()
-                {
-                    if (string.IsNullOrEmpty(_notes))
-                        Console.WriteLine("Нотаток поки що немає.");
-                    else
-                        Console.WriteLine(_notes);
+                    for (int j = 0; j < cols; j++)
+                    {
+                        matrix[i, j] = random.Next(1, 100); 
+                    }
                 }
             }
-        }
 
-        static class FindAndReplaceManager
-        {
-            public static void FindNext(string str)
+            public void DisplayMatrix()
             {
-                if (Book.Content.Contains(str))
-                    Console.WriteLine($"Знайдено: \"{str}\" є в книзі.");
-                else
-                    Console.WriteLine($"Не знайдено: \"{str}\" в книзі немає.");
+                for (int i = 0; i < matrix.GetLength(0); i++)
+                {
+                    for (int j = 0; j < matrix.GetLength(1); j++)
+                    {
+                        Console.Write(matrix[i, j] + "\t");
+                    }
+                    Console.WriteLine();
+                }
+            }
+            public MyMatrix GetTransposed()
+            {
+                int rows = matrix.GetLength(1);
+                int cols = matrix.GetLength(0);
+                MyMatrix transposedMatrix = new MyMatrix(rows, cols);
+
+                for (int i = 0; i < rows; i++)
+                {
+                    for (int j = 0; j < cols; j++)
+                    {
+                        transposedMatrix.matrix[i, j] = matrix[j, i];
+                    }
+                }
+                return transposedMatrix;
+            }
+
+            public void ResizeMatrix(int newRows, int newCols)
+            {
+                int[,] newMatrix = new int[newRows, newCols];
+                int rowsToCopy = Math.Min(newRows, matrix.GetLength(0));
+                int colsToCopy = Math.Min(newCols, matrix.GetLength(1));
+
+               
+                for (int i = 0; i < rowsToCopy; i++)
+                {
+                    for (int j = 0; j < colsToCopy; j++)
+                    {
+                        newMatrix[i, j] = matrix[i, j];
+                    }
+                }
+                matrix = newMatrix;
             }
         }
+
     }
 }
